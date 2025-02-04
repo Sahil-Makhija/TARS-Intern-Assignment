@@ -2,7 +2,11 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
+import { API } from "@/api";
 import {
   Button,
   EmailField,
@@ -11,11 +15,10 @@ import {
   PasswordField,
   passwordValidations,
 } from "@/components";
-import { Link } from "@tanstack/react-router";
 
 const SignInSchema = z.object({
   ...emailValidations,
-  ...passwordValidations,
+  ...passwordValidations.signIn,
 });
 
 export type SignInModel = z.infer<typeof SignInSchema>;
@@ -30,8 +33,17 @@ export const SignIn: React.FC = () => {
     resolver: zodResolver(SignInSchema),
   });
 
-  const onSubmit: SubmitHandler<SignInModel> = async (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<SignInModel> = async (userData) => {
+    const { success, data } = await API.SignIn({ userData });
+    if (success) {
+      navigate({ to: "/app" });
+      toast.success("User signed in successfully");
+      localStorage.setItem("token", data.token);
+    } else {
+      toast.error("Something went wrong");
+    }
   };
 
   return (

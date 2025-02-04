@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Mic, MicOff } from "lucide-react";
 
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 
-import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui";
+import { useNoteModal } from "@/hooks";
 
 export const SpeechInput: React.FC = () => {
   const { isListening, error, startListening, stopListening, text } =
@@ -11,7 +12,18 @@ export const SpeechInput: React.FC = () => {
       durationInMinutes: 1,
     });
 
-  console.log(isListening, error, text);
+  const { setAudioTranscription, open } = useNoteModal();
+
+  useEffect(() => {
+    if (isListening) return;
+    if (!text && !error) return;
+    if (text) {
+      setAudioTranscription(text);
+    } else {
+      setAudioTranscription(error as string);
+    }
+    open();
+  }, [isListening]);
 
   return (
     <Button

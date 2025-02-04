@@ -3,6 +3,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { toast } from "sonner";
+
 import {
   Button,
   ConfirmPasswordField,
@@ -16,11 +18,12 @@ import {
   usernameValidations,
 } from "@/components";
 import { Link } from "@tanstack/react-router";
+import { API } from "@/api";
 
 const SignUpSchema = z.object({
   ...emailValidations,
   ...usernameValidations,
-  ...passwordValidations,
+  ...passwordValidations.signUp,
   ...confirmPasswordValidations,
 });
 
@@ -38,8 +41,15 @@ export const SignUp: React.FC = () => {
     resolver: zodResolver(SignUpSchema),
   });
 
-  const onSubmit: SubmitHandler<SignUpModel> = async (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SignUpModel> = async (userData) => {
+    const { success, data, error } = await API.SignUp({ userData });
+    if (success) {
+      toast.success("User created successfully");
+      localStorage.setItem("token", data.token);
+    } else {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
   };
 
   return (

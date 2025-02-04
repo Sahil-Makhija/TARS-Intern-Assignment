@@ -10,19 +10,24 @@ import {
 } from "../ui";
 
 export const passwordValidations = {
-  password: z
-    .string()
-    .min(8, { message: "Password should be at least 8 characters long" })
-    .regex(/[A-Z]/, {
-      message: "Password should contain at least one uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password should contain at least one lowercase letter",
-    })
-    .regex(/[0-9]/, { message: "Password should contain at least one digit" })
-    .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/, {
-      message: "Password should contain at least one special character",
-    }),
+  signUp: {
+    password: z
+      .string()
+      .min(8, { message: "Password should be at least 8 characters long" })
+      .regex(/[A-Z]/, {
+        message: "Password should contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password should contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password should contain at least one digit" })
+      .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/, {
+        message: "Password should contain at least one special character",
+      }),
+  },
+  signIn: {
+    password: z.string(),
+  },
 };
 
 export const PasswordField = () => {
