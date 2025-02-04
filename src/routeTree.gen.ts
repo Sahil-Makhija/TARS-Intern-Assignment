@@ -8,40 +8,273 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as IndexImport } from './routes/index'
+import { Route as AuthLayoutImport } from './routes/auth/_layout'
+import { Route as AppLayoutImport } from './routes/app/_layout'
+import { Route as AppLayoutIndexImport } from './routes/app/_layout/index'
+import { Route as AuthLayoutSignUpIndexImport } from './routes/auth/_layout/sign-up.index'
+import { Route as AuthLayoutSignInIndexImport } from './routes/auth/_layout/sign-in.index'
+import { Route as AppLayoutnotesNoteIdIndexImport } from './routes/app/_layout/(notes)/$noteId.index'
+
+// Create Virtual Routes
+
+const AuthImport = createFileRoute('/auth')()
+const AppImport = createFileRoute('/app')()
 
 // Create/Update Routes
+
+const AuthRoute = AuthImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppRoute = AppImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthLayoutRoute = AuthLayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AppLayoutRoute = AppLayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => AppRoute,
+} as any)
+
+const AppLayoutIndexRoute = AppLayoutIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+
+const AuthLayoutSignUpIndexRoute = AuthLayoutSignUpIndexImport.update({
+  id: '/sign-up/',
+  path: '/sign-up/',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AuthLayoutSignInIndexRoute = AuthLayoutSignInIndexImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AppLayoutnotesNoteIdIndexRoute = AppLayoutnotesNoteIdIndexImport.update({
+  id: '/(notes)/$noteId/',
+  path: '/$noteId/',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppImport
+      parentRoute: typeof rootRoute
+    }
+    '/app/_layout': {
+      id: '/app/_layout'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppLayoutImport
+      parentRoute: typeof AppRoute
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/_layout': {
+      id: '/auth/_layout'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthLayoutImport
+      parentRoute: typeof AuthRoute
+    }
+    '/app/_layout/': {
+      id: '/app/_layout/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppLayoutIndexImport
+      parentRoute: typeof AppLayoutImport
+    }
+    '/auth/_layout/sign-in/': {
+      id: '/auth/_layout/sign-in/'
+      path: '/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthLayoutSignInIndexImport
+      parentRoute: typeof AuthLayoutImport
+    }
+    '/auth/_layout/sign-up/': {
+      id: '/auth/_layout/sign-up/'
+      path: '/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthLayoutSignUpIndexImport
+      parentRoute: typeof AuthLayoutImport
+    }
+    '/app/_layout/(notes)/$noteId/': {
+      id: '/app/_layout/(notes)/$noteId/'
+      path: '/$noteId'
+      fullPath: '/app/$noteId'
+      preLoaderRoute: typeof AppLayoutnotesNoteIdIndexImport
+      parentRoute: typeof AppLayoutImport
+    }
+  }
 }
 
 // Create and export the route tree
 
-export interface FileRoutesByFullPath {}
+interface AppLayoutRouteChildren {
+  AppLayoutIndexRoute: typeof AppLayoutIndexRoute
+  AppLayoutnotesNoteIdIndexRoute: typeof AppLayoutnotesNoteIdIndexRoute
+}
 
-export interface FileRoutesByTo {}
+const AppLayoutRouteChildren: AppLayoutRouteChildren = {
+  AppLayoutIndexRoute: AppLayoutIndexRoute,
+  AppLayoutnotesNoteIdIndexRoute: AppLayoutnotesNoteIdIndexRoute,
+}
+
+const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
+  AppLayoutRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppLayoutRoute: typeof AppLayoutRouteWithChildren
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppLayoutRoute: AppLayoutRouteWithChildren,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface AuthLayoutRouteChildren {
+  AuthLayoutSignInIndexRoute: typeof AuthLayoutSignInIndexRoute
+  AuthLayoutSignUpIndexRoute: typeof AuthLayoutSignUpIndexRoute
+}
+
+const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
+  AuthLayoutSignInIndexRoute: AuthLayoutSignInIndexRoute,
+  AuthLayoutSignUpIndexRoute: AuthLayoutSignUpIndexRoute,
+}
+
+const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
+  AuthLayoutRouteChildren,
+)
+
+interface AuthRouteChildren {
+  AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLayoutRoute: AuthLayoutRouteWithChildren,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/app': typeof AppLayoutRouteWithChildren
+  '/auth': typeof AuthLayoutRouteWithChildren
+  '/app/': typeof AppLayoutIndexRoute
+  '/auth/sign-in': typeof AuthLayoutSignInIndexRoute
+  '/auth/sign-up': typeof AuthLayoutSignUpIndexRoute
+  '/app/$noteId': typeof AppLayoutnotesNoteIdIndexRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/app': typeof AppLayoutIndexRoute
+  '/auth': typeof AuthLayoutRouteWithChildren
+  '/auth/sign-in': typeof AuthLayoutSignInIndexRoute
+  '/auth/sign-up': typeof AuthLayoutSignUpIndexRoute
+  '/app/$noteId': typeof AppLayoutnotesNoteIdIndexRoute
+}
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/_layout': typeof AppLayoutRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/_layout': typeof AuthLayoutRouteWithChildren
+  '/app/_layout/': typeof AppLayoutIndexRoute
+  '/auth/_layout/sign-in/': typeof AuthLayoutSignInIndexRoute
+  '/auth/_layout/sign-up/': typeof AuthLayoutSignUpIndexRoute
+  '/app/_layout/(notes)/$noteId/': typeof AppLayoutnotesNoteIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: never
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/app/'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/app/$noteId'
   fileRoutesByTo: FileRoutesByTo
-  to: never
-  id: '__root__'
+  to:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/app/$noteId'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/_layout'
+    | '/auth'
+    | '/auth/_layout'
+    | '/app/_layout/'
+    | '/auth/_layout/sign-in/'
+    | '/auth/_layout/sign-up/'
+    | '/app/_layout/(notes)/$noteId/'
   fileRoutesById: FileRoutesById
 }
 
-export interface RootRouteChildren {}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
+}
 
-const rootRouteChildren: RootRouteChildren = {}
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
@@ -52,7 +285,58 @@ export const routeTree = rootRoute
   "routes": {
     "__root__": {
       "filePath": "__root.tsx",
-      "children": []
+      "children": [
+        "/",
+        "/app",
+        "/auth"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/app": {
+      "filePath": "app",
+      "children": [
+        "/app/_layout"
+      ]
+    },
+    "/app/_layout": {
+      "filePath": "app/_layout.tsx",
+      "parent": "/app",
+      "children": [
+        "/app/_layout/",
+        "/app/_layout/(notes)/$noteId/"
+      ]
+    },
+    "/auth": {
+      "filePath": "auth",
+      "children": [
+        "/auth/_layout"
+      ]
+    },
+    "/auth/_layout": {
+      "filePath": "auth/_layout.tsx",
+      "parent": "/auth",
+      "children": [
+        "/auth/_layout/sign-in/",
+        "/auth/_layout/sign-up/"
+      ]
+    },
+    "/app/_layout/": {
+      "filePath": "app/_layout/index.tsx",
+      "parent": "/app/_layout"
+    },
+    "/auth/_layout/sign-in/": {
+      "filePath": "auth/_layout/sign-in.index.tsx",
+      "parent": "/auth/_layout"
+    },
+    "/auth/_layout/sign-up/": {
+      "filePath": "auth/_layout/sign-up.index.tsx",
+      "parent": "/auth/_layout"
+    },
+    "/app/_layout/(notes)/$noteId/": {
+      "filePath": "app/_layout/(notes)/$noteId.index.tsx",
+      "parent": "/app/_layout"
     }
   }
 }

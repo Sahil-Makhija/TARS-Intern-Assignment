@@ -8,8 +8,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-      <div className="bg-destructive">Hello "__root"!</div>
-      <Outlet />
+      <main className="mx-auto h-screen w-full max-w-screen-2xl p-6">
+        <Outlet />
+      </main>
     </React.Fragment>
   );
 }
